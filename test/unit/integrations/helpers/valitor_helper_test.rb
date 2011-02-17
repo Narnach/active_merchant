@@ -7,9 +7,10 @@ class ValitorHelperTest < Test::Unit::TestCase
     @helper = Valitor::Helper.new(
       'order-500',
       'cody@example.com',
-      :currency => 'USD'
+      :currency => 'USD',
+      :credential2 => '123',
+      :amount => 1000
       )
-    @helper.password('123')
   end
 
   def test_basic_helper_fields
@@ -19,8 +20,8 @@ class ValitorHelperTest < Test::Unit::TestCase
     assert_field 'Tilvisunarnumer', 'order-500'
     assert_field 'Gjaldmidill', 'USD'
 
-    assert_equal Digest::MD5.hexdigest(['123', '0', 'cody@example.com', 'order-500', 'USD'].join('')),
-                 @helper.form_fields['RafraenUndirskrift']
+    assert_equal Digest::MD5.hexdigest(['123', '0', '1', '1000', '0', 'cody@example.com', 'order-500', 'USD'].join('')),
+    @helper.form_fields['RafraenUndirskrift']
   end
 
   def test_products
@@ -81,7 +82,7 @@ class ValitorHelperTest < Test::Unit::TestCase
   end
 
   def test_missing_password
-    @helper.password(nil)
+    @helper.instance_eval{@security_number = nil}
     assert_raise ArgumentError do
       @helper.form_fields
     end
@@ -99,6 +100,7 @@ class ValitorHelperTest < Test::Unit::TestCase
 
     assert_equal Digest::MD5.hexdigest(
       ['123', '0',
+         '1', '1000', '0',
         'cody@example.com', 'order-500', 'http://example.com/return', 'http://example.com/notify', 'USD'].join('')),
       @helper.form_fields['RafraenUndirskrift']
   end

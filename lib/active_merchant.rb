@@ -32,6 +32,11 @@ require 'active_support/core_ext/class/attribute_accessors'
 require 'active_support/core_ext/class/delegating_attributes'
 require 'active_support/core_ext/module/attribute_accessors'
 require 'active_support/core_ext/kernel/requires'
+begin
+  require 'active_support/core_ext/module/deprecation'
+rescue LoadError => e
+  # Does not exist in active_support version 2.3.11
+end
 require 'active_support/base64'
 require 'active_support/secure_random'
 

@@ -49,7 +49,6 @@ class ConnectionTest < Test::Unit::TestCase
     end
   end
 
-
   def test_default_read_timeout
     assert_equal ActiveMerchant::Connection::READ_TIMEOUT, @connection.read_timeout
   end

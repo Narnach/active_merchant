@@ -14,8 +14,7 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
   def test_full_purchase
     notification_request = listen_for_notification(80) do |notify_url|
       payment_page = submit %(
-        <% payment_service_for('#{@order}', '#{@login}', :service => :valitor, :html => {:method => 'GET'}) do |service| %>
-          <% service.password '#{@password}' %>
+        <% payment_service_for('#{@order}', '#{@login}', :service => :valitor, :credential2 => #{@password}, :html => {:method => 'GET'}) do |service| %>
           <% service.product(1, :amount => 100, :description => 'PRODUCT1', :discount => '0') %>
           <% service.return_url = 'http://example.org/return' %>
           <% service.cancel_return_url = 'http://example.org/cancel' %>
@@ -46,8 +45,7 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
 
   def test_customer_fields
     payment_page = submit %(
-      <% payment_service_for('#{@order}', '#{@login}', :service => :valitor, :html => {:method => 'GET'}) do |service| %>
-        <% service.password '#{@password}' %>
+      <% payment_service_for('#{@order}', '#{@login}', :service => :valitor, :credential2 => #{@password}, :html => {:method => 'GET'}) do |service| %>
         <% service.product(1, :amount => 100, :description => 'test', :discount => '0') %>
         <% service.return_url = 'http://example.org/return' %>
         <% service.cancel_return_url = 'http://example.org/cancel' %>
@@ -87,8 +85,7 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
 
   def test_products
     payment_page = submit %(
-      <% payment_service_for('#{@order}', '#{@login}', :service => :valitor, :html => {:method => 'GET'}) do |service| %>
-        <% service.password '#{@password}' %>
+      <% payment_service_for('#{@order}', '#{@login}', :service => :valitor, :credential2 => #{@password}, :html => {:method => 'GET'}) do |service| %>
         <% service.product(1, :amount => 100, :description => 'PRODUCT1') %>
         <% service.product(2, :amount => 200, :description => 'PRODUCT2', :discount => '50') %>
         <% service.product(3, :amount => 300, :description => 'PRODUCT3', :quantity => '6') %>
@@ -108,6 +105,26 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
     check_product_row(rows[1], "PRODUCT1", "1", "100 ISK", "0 ISK",  "100 ISK")
     check_product_row(rows[2], "PRODUCT2", "1", "200 ISK", "50 ISK", "150 ISK")
     check_product_row(rows[3], "PRODUCT3", "6", "300 ISK", "0 ISK",  "1.800 ISK")
+    assert_match /2.050 ISK/, rows[4].element_children.first.text
+  end
+
+  def test_default_product_if_none_provided
+    payment_page = submit %(
+      <% payment_service_for('#{@order}', '#{@login}', :service => :valitor, :credential2 => #{@password}, :html => {:method => 'GET'}) do |service| %>
+        <% service.return_url = 'http://example.org/return' %>
+        <% service.cancel_return_url = 'http://example.org/cancel' %>
+        <% service.success_text = 'SuccessText!' %>
+        <% service.language = 'en' %>
+        <% service.collect_customer_info %>
+      <% end %>
+    )
+
+    assert_match(%r(http://example.org/cancel)i, payment_page.body)
+
+    doc = Nokogiri::HTML(payment_page.body)
+    rows = doc.xpath("//table[@class='VoruTafla']//tr")
+    assert_equal 5, rows.size
+    check_product_row(rows[1], "PRODUCT1", "1", "100 ISK", "0 ISK",  "100 ISK")
     assert_match /2.050 ISK/, rows[4].element_children.first.text
   end
 

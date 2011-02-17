@@ -179,16 +179,20 @@ module ActiveMerchant #:nodoc:
       end
 
       def add_address(xml, address)
-        xml.tag! 'Name', address[:name]
+        xml.tag! 'Name', normalize(address[:name])
         address_text = address[:address1]
-        address_text << " #{address[:address2]}" if address[:address2]
-        xml.tag! 'Text', address_text
-        xml.tag! 'City', address[:city]
-        xml.tag! 'District', address[:state]
+        address_text << " #{ address[:address2]}" if address[:address2]
+        xml.tag! 'Text', normalize(address_text)
+        xml.tag! 'City', normalize(address[:city])
+        xml.tag! 'District', normalize(address[:state])
         xml.tag! 'PostalCode', address[:zip]
-        xml.tag! 'Country', address[:country]
-        xml.tag! 'Company', address[:company]
+        xml.tag! 'Country', normalize(address[:country])
+        xml.tag! 'Company', normalize(address[:company])
         xml.tag! 'PhoneNumber', address[:phone].to_s.gsub(/[^0-9]/, '') if address[:phone]
+      end
+
+      def normalize(text)
+        ActiveSupport::Inflector.transliterate(text,'')
       end
 
       def add_transaction_data(xml, money, options)

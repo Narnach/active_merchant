@@ -98,7 +98,6 @@ AUTHOR.#    : ET1700
 
 SIGNATURE
 
-
 _______________________________________
 
 </CTR></types:TransactionResult></soap:Body></soap:Envelope>

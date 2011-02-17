@@ -221,7 +221,6 @@ class DirecPayHelperTest < Test::Unit::TestCase
     DirecPay::Status.new(1234, :test => true).update("dummy-authorization", "http://localhost/notify")
   end
 
-
   private
 
   def fill_in_transaction_details!(helper)
