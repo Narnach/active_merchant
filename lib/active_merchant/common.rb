@@ -1,4 +1,4 @@
-module ActiveMerchant  
+module ActiveMerchant
   autoload :Connection,                'active_merchant/common/connection'
   autoload :Country,                   'active_merchant/common/country'
   autoload :ActiveMerchantError,       'active_merchant/common/error'

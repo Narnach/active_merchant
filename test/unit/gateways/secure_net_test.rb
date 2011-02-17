@@ -10,7 +10,7 @@ class SecureNetTest < Test::Unit::TestCase
     @credit_card = credit_card
     @amount = 100
 
-    @options = { 
+    @options = {
       :order_id => '1',
       :billing_address => address,
       :description => 'Store Purchase'
@@ -115,17 +115,16 @@ class SecureNetTest < Test::Unit::TestCase
   def test_supported_countries
     assert_equal ['US'], SecureNetGateway.supported_countries
   end
-  
+
   def test_supported_card_types
     assert_equal [:visa, :master, :american_express, :discover], SecureNetGateway.supported_cardtypes
   end
-  
+
   def test_failure_without_response_reason_text
     assert_nothing_raised do
       assert_equal '', @gateway.send(:message_from, {})
     end
   end
-
 
   private
 

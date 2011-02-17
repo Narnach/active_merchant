@@ -46,9 +46,9 @@ class DirecPayReturnTest < Test::Unit::TestCase
   def http_raw_data_success
     "responseparams=1001010000026481|SUCCESS|IND|INR|NULL|1001|1.00|"
   end
-  
+
   def http_raw_data_failure
     "responseparams=1001010000026516|FAIL|IND|INR|NULL|1001|1.00|"
   end
-  
+
 end

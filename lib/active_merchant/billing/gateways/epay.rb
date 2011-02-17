@@ -106,7 +106,6 @@ module ActiveMerchant #:nodoc:
         commit(:credit, post)
       end
 
-
       private
 
       def add_amount(post, money, options)

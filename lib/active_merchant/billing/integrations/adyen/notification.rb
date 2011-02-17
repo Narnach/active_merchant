@@ -7,7 +7,7 @@ module ActiveMerchant #:nodoc:
         class Notification < ActiveMerchant::Billing::Integrations::Notification
           def complete?
             ((params['eventCode'] == 'AUTHORISATION') and (params['success'] == 'true'))
-          end 
+          end
 
           def event_code
             params['eventCode']
@@ -21,7 +21,7 @@ module ActiveMerchant #:nodoc:
             params['pspReference']
           end
 
-          # When was this payment received by the client. 
+          # When was this payment received by the client.
           def received_at
             params['eventDate']
           end
@@ -29,10 +29,10 @@ module ActiveMerchant #:nodoc:
           def payer_email
             ''#params['']
           end
-         
+
           def receiver_email
             ''#params['']
-          end 
+          end
 
           def security_key
             ''#params['']
@@ -56,21 +56,21 @@ module ActiveMerchant #:nodoc:
             params['currency']
           end
 
-          # Acknowledge the transaction to Adyen. This method has to be called after a new 
-          # apc arrives. Adyen will verify that all the information we received are correct and will return a 
-          # ok or a fail. 
-          # 
+          # Acknowledge the transaction to Adyen. This method has to be called after a new
+          # apc arrives. Adyen will verify that all the information we received are correct and will return a
+          # ok or a fail.
+          #
           # Example:
-          # 
+          #
           #   def ipn
           #     notify = AdyenNotification.new(request.raw_post)
           #
-          #     if notify.acknowledge 
+          #     if notify.acknowledge
           #       ... process order ... if notify.complete?
           #     else
           #       ... log possible hacking attempt ...
           #     end
-          def acknowledge      
+          def acknowledge
             # this is a stub because Adyen does not support this feature, as of 2009-10-12
             true
           end

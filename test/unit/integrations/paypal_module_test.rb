@@ -2,7 +2,7 @@ require 'test_helper'
 
 class PaypalModuleTest < Test::Unit::TestCase
   include ActiveMerchant::Billing::Integrations
-  
+
   def test_notification_method
     assert_instance_of Paypal::Notification, Paypal.notification('name=cody')
   end
@@ -21,8 +21,8 @@ class PaypalModuleTest < Test::Unit::TestCase
     ActiveMerchant::Billing::Base.integration_mode = :zoomin
     assert_raise(StandardError){ Paypal.service_url }
   end
-  
+
   def test_return_method
     assert_instance_of Paypal::Return, Paypal.return('name=cody')
   end
-end 
+end

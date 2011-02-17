@@ -323,7 +323,6 @@ module ActiveMerchant #:nodoc:
         end
       end
 
-
     end
   end
 end

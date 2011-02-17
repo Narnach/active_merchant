@@ -1,14 +1,14 @@
 require 'test_helper'
 
 class RemoteSageCheckTest < Test::Unit::TestCase
-  
+
   def setup
     @gateway = SageVirtualCheckGateway.new(fixtures(:sage))
-    
+
     @amount = 100
     @check = check
-  
-    @options = { 
+
+    @options = {
       :order_id => generate_unique_id,
       :billing_address => address,
       :shipping_address => address,
@@ -19,31 +19,31 @@ class RemoteSageCheckTest < Test::Unit::TestCase
       :ssn => '078051120'
     }
   end
-  
+
   def test_successful_check_purchase
     assert response = @gateway.purchase(@amount, @check, @options)
     assert_success response
     assert response.test?
     assert_false response.authorization.blank?
   end
-  
+
   def test_failed_check_purchase
     @check.routing_number = ""
-    
+
     assert response = @gateway.purchase(@amount, @check, @options)
     assert_failure response
     assert response.test?
     assert_false response.authorization.blank?
   end
-  
+
   def test_purchase_and_void
     assert purchase = @gateway.purchase(@amount, @check, @options)
     assert_success purchase
-    
+
     assert void = @gateway.void(purchase.authorization)
     assert_success void
   end
-  
+
   def test_credit
     assert response = @gateway.credit(@amount, @check, @options)
     assert_success response

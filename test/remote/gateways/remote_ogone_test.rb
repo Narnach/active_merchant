@@ -19,7 +19,7 @@ class RemoteOgoneTest < Test::Unit::TestCase
     assert_success response
     assert_equal OgoneGateway::SUCCESS_MESSAGE, response.message
   end
-  
+
   def test_successful_with_non_numeric_order_id
     @options[:order_id] = "##{@options[:order_id][0...26]}.12"
     assert response = @gateway.purchase(@amount, @credit_card, @options)

@@ -12,7 +12,7 @@ module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
     class BraintreeBlueGateway < Gateway
       include BraintreeCommon
-      
+
       self.display_name = 'Braintree (Blue Platform)'
 
       def initialize(options = {})

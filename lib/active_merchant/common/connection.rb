@@ -3,13 +3,13 @@ require 'net/http'
 require 'net/https'
 require 'benchmark'
 
-module ActiveMerchant  
+module ActiveMerchant
   class ConnectionError < ActiveMerchantError # :nodoc:
   end
-  
+
   class RetriableConnectionError < ConnectionError # :nodoc:
   end
-  
+
   class ResponseError < ActiveMerchantError # :nodoc:
     attr_reader :response
 
@@ -22,7 +22,7 @@ module ActiveMerchant
       "Failed with #{response.code} #{response.message if response.respond_to?(:message)}"
     end
   end
-  
+
   class Connection
     MAX_RETRIES = 3
     OPEN_TIMEOUT = 60
@@ -30,7 +30,7 @@ module ActiveMerchant
     VERIFY_PEER = true
     RETRY_SAFE = false
     RUBY_184_POST_HEADERS = { "Content-Type" => "application/x-www-form-urlencoded" }
-  
+
     attr_accessor :endpoint
     attr_accessor :open_timeout
     attr_accessor :read_timeout
@@ -41,7 +41,7 @@ module ActiveMerchant
     attr_accessor :wiredump_device
     attr_accessor :logger
     attr_accessor :tag
-    
+
     def initialize(endpoint)
       @endpoint     = endpoint.is_a?(URI) ? endpoint : URI.parse(endpoint)
       @open_timeout = OPEN_TIMEOUT
@@ -49,14 +49,14 @@ module ActiveMerchant
       @retry_safe   = RETRY_SAFE
       @verify_peer  = VERIFY_PEER
     end
-    
+
     def request(method, body, headers = {})
-      retry_exceptions do 
+      retry_exceptions do
         begin
           info "#{method.to_s.upcase} #{endpoint}", tag
 
           result = nil
-          
+
           realtime = Benchmark.realtime do
             result = case method
             when :get
@@ -69,7 +69,7 @@ module ActiveMerchant
               raise ArgumentError, "Unsupported request method #{method.to_s.upcase}"
             end
           end
-          
+
           info "--> %d %s (%d %.4fs)" % [result.code, result.message, result.body ? result.body.length : 0, realtime], tag
           debug result.body
           result
@@ -86,7 +86,7 @@ module ActiveMerchant
         end
       end
     end
-    
+
     private
     def http
       http = Net::HTTP.new(endpoint.host, endpoint.port)
@@ -96,41 +96,41 @@ module ActiveMerchant
       configure_cert(http)
       http
     end
-    
+
     def configure_debugging(http)
       http.set_debug_output(wiredump_device)
     end
-    
+
     def configure_timeouts(http)
       http.open_timeout = open_timeout
       http.read_timeout = read_timeout
     end
-    
+
     def configure_ssl(http)
       return unless endpoint.scheme == "https"
 
       http.use_ssl = true
-      
+
       if verify_peer
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
         http.ca_file     = File.dirname(__FILE__) + '/../../certs/cacert.pem'
-      else               
+      else
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
     end
-    
+
     def configure_cert(http)
       return if pem.blank?
-      
+
       http.cert = OpenSSL::X509::Certificate.new(pem)
-      
+
       if pem_password
         http.key = OpenSSL::PKey::RSA.new(pem, pem_password)
       else
         http.key = OpenSSL::PKey::RSA.new(pem)
       end
     end
-        
+
     def retry_exceptions
       retries = MAX_RETRIES
       begin
@@ -145,15 +145,15 @@ module ActiveMerchant
         raise
       end
     end
-    
+
     def debug(message, tag = nil)
       log(:debug, message, tag)
     end
-    
+
     def info(message, tag = nil)
       log(:info, message, tag)
     end
-    
+
     def log(level, message, tag)
       message = "[#{tag}] #{message}" if tag
       logger.send(level, message) if logger

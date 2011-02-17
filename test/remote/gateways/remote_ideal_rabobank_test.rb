@@ -26,7 +26,6 @@ class RemoteIdealRabobankTest < Test::Unit::TestCase
     assert_equal 'Short', list[0]['issuerList']
   end
 
-
   def test_set_purchase
     response = @gateway.setup_purchase(550, @options)
 

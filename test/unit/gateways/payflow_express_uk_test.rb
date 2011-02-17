@@ -7,11 +7,11 @@ class PayflowExpressUkTest < Test::Unit::TestCase
       :password => 'PASSWORD'
     )
   end
-  
+
   def test_supported_countries
     assert_equal ['GB'], PayflowExpressUkGateway.supported_countries
   end
-  
+
   def test_get_express_details
      @gateway.expects(:ssl_post).returns(successful_get_express_details_response)
      response = @gateway.details_for('EC-2OPN7UJGFWK9OYFV')
@@ -36,7 +36,7 @@ class PayflowExpressUkTest < Test::Unit::TestCase
      assert_equal 'GB', address['country']
      assert_nil address['phone']
    end
-  
+
   private
   def successful_get_express_details_response
     <<-RESPONSE

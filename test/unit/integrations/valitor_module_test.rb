@@ -2,7 +2,7 @@ require 'test_helper'
 
 class ValitorModuleTest < Test::Unit::TestCase
   include ActiveMerchant::Billing::Integrations
-  
+
   def test_notification_method
     notification = Valitor.notification('Land=USA', :password => 'password')
     assert_instance_of Valitor::Notification, notification
@@ -28,7 +28,7 @@ class ValitorModuleTest < Test::Unit::TestCase
   ensure
     ActiveMerchant::Billing::Base.integration_mode = :test
   end
-  
+
   def test_service_url
     assert_equal "https://testvefverslun.valitor.is/1_1/", Valitor.service_url
     ActiveMerchant::Billing::Base.integration_mode = :production
@@ -36,4 +36,4 @@ class ValitorModuleTest < Test::Unit::TestCase
   ensure
     ActiveMerchant::Billing::Base.integration_mode = :test
   end
-end 
+end

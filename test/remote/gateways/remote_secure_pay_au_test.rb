@@ -1,20 +1,20 @@
 require 'test_helper'
 
 class RemoteSecurePayAuTest < Test::Unit::TestCase
-  
+
   def setup
     @gateway = SecurePayAuGateway.new(fixtures(:secure_pay_au))
-    
+
     @amount = 100
     @credit_card = credit_card('4444333322221111')
 
-    @options = { 
+    @options = {
       :order_id => '1',
       :billing_address => address,
       :description => 'Store Purchase'
     }
   end
-  
+
   def test_successful_purchase
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_success response

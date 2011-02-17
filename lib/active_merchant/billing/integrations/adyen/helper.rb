@@ -12,7 +12,7 @@ module ActiveMerchant #:nodoc:
           # the values of these fields are concatenated, HMAC digested, Base64 encoded, and sent along with the POST data to make hoodwinkery difficult
           SIGNATURE_FIELDS = [
             :paymentAmount,
-            :currencyCode,  
+            :currencyCode,
             :shipBeforeDate,
             :merchantReference,
             :skinCode,
@@ -22,7 +22,7 @@ module ActiveMerchant #:nodoc:
 
           # same as above but for the customer's street address, which is to be separately hashed, as specified by Adyen
           # country should be ISO 3166-1 alpha-2 format, see http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 )
-          ADDRESS_SIGNATURE_FIELDS = %w( billingAddress.street billingAddress.houseNumberOrName billingAddress.city billingAddress.postalCode billingAddress.stateOrProvince billingAddress.country ) 
+          ADDRESS_SIGNATURE_FIELDS = %w( billingAddress.street billingAddress.houseNumberOrName billingAddress.city billingAddress.postalCode billingAddress.stateOrProvince billingAddress.country )
 
           def initialize(order, account, options = {})
             super
@@ -66,7 +66,7 @@ module ActiveMerchant #:nodoc:
 
           def generate_address_signature_string
           end
-            
+
           # Replace with the real mapping
           mapping :account, 'merchantAccount'
           mapping :amount, 'paymentAmount'

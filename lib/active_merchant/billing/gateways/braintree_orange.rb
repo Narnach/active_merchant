@@ -7,7 +7,7 @@ module ActiveMerchant #:nodoc:
       include BraintreeCommon
 
       self.display_name = 'Braintree (Orange Platform)'
-      
+
       def api_url
         'https://secure.braintreepaymentgateway.com/api/transact.php'
       end

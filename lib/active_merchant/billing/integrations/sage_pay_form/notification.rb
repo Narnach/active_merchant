@@ -8,12 +8,12 @@ module ActiveMerchant #:nodoc:
           class CryptError < StandardError; end
 
           include Encryption
-          
+
           def initialize(post_data, options)
             super
             load_crypt_params(params['crypt'], options[:credential2])
           end
-          
+
           # Was the transaction complete?
           def complete?
             status_code == 'OK'
@@ -62,7 +62,7 @@ module ActiveMerchant #:nodoc:
           def gross
             params['Amount']
           end
-          
+
           # AVS and CV2 check results.  Possible values:
           # <tt>ALL MATCH</tt>::
           # <tt>SECURITY CODE MATCH ONLY</tt>::
@@ -72,21 +72,21 @@ module ActiveMerchant #:nodoc:
           def avs_cv2_result
             params['AVSCV2']
           end
-          
+
           # Numeric address check.  Possible values:
           # <tt>NOTPROVIDED</tt>::
           # <tt>NOTCHECKED</tt>::
           # <tt>MATCHED</tt>::
-          # <tt>NOTMATCHED</tt>::          
+          # <tt>NOTMATCHED</tt>::
           def address_result
             params['AddressResult']
           end
-          
+
           # Post code check.  Possible values:
           # <tt>NOTPROVIDED</tt>::
           # <tt>NOTCHECKED</tt>::
           # <tt>MATCHED</tt>::
-          # <tt>NOTMATCHED</tt>::          
+          # <tt>NOTMATCHED</tt>::
           def post_code_result
             params['PostCodeResult']
           end
@@ -95,7 +95,7 @@ module ActiveMerchant #:nodoc:
           # <tt>NOTPROVIDED</tt>::
           # <tt>NOTCHECKED</tt>::
           # <tt>MATCHED</tt>::
-          # <tt>NOTMATCHED</tt>::          
+          # <tt>NOTMATCHED</tt>::
           def cv2_result
             params['CV2Result']
           end
@@ -122,9 +122,9 @@ module ActiveMerchant #:nodoc:
           end
 
           # Address confirmation status.  PayPal only.  Possible values:
-          # <tt>NONE</tt>:: 
-          # <tt>CONFIRMED</tt>:: 
-          # <tt>UNCONFIRMED</tt>:: 
+          # <tt>NONE</tt>::
+          # <tt>CONFIRMED</tt>::
+          # <tt>UNCONFIRMED</tt>::
           def address_status
             params['AddressStatus']
           end
@@ -133,7 +133,7 @@ module ActiveMerchant #:nodoc:
           def payer_verified?
             params['PayerStatus'] == 'VERIFIED'
           end
-          
+
           # Credit card type.  Possible values:
           # <tt>VISA</tt>:: Visa
           # <tt>MC</tt>:: MasterCard
@@ -163,8 +163,8 @@ module ActiveMerchant #:nodoc:
           def test?
             false
           end
-          
-          def acknowledge      
+
+          def acknowledge
             true
           end
 
@@ -173,11 +173,11 @@ module ActiveMerchant #:nodoc:
           def load_crypt_params(crypt, key)
             raise MissingCryptData if crypt.blank?
             raise MissingCryptKey  if key.blank?
-            
+
             crypt_data = sage_decrypt(crypt.gsub(' ', '+'), key)
             raise InvalidCryptData unless crypt_data =~ /(^|&)Status=/
 
-            params.clear            
+            params.clear
             parse(crypt_data)
           end
 

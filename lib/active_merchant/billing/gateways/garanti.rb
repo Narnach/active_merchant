@@ -29,7 +29,6 @@ module ActiveMerchant #:nodoc:
         'JPY' => 392
       }
 
-
       def initialize(options = {})
         requires!(options, :login, :password, :terminal_id, :merchant_id)
         @options = options
@@ -156,11 +155,11 @@ module ActiveMerchant #:nodoc:
         format(value, :two_digits)
       end
 
-      # OrderId field must be A-Za-z0-9_ format and max 36 char      
+      # OrderId field must be A-Za-z0-9_ format and max 36 char
       def format_order_id(order_id)
         order_id.to_s.gsub(/[^A-Za-z0-9_]/, '')[0...36]
       end
-      
+
       def add_addresses(xml, options)
         xml.tag! 'AddressList' do
           if billing_address = options[:billing_address] || options[:address]
@@ -191,7 +190,7 @@ module ActiveMerchant #:nodoc:
         xml.tag! 'Company', address[:company]
         xml.tag! 'PhoneNumber', address[:phone].to_s.gsub(/[^0-9]/, '') if address[:phone]
       end
-      
+
       def add_transaction_data(xml, money, options)
         xml.tag! 'Transaction' do
           xml.tag! 'Type', options[:gvp_order_type]

@@ -2,7 +2,7 @@ require 'test_helper'
 
 class BogusHelperTest < Test::Unit::TestCase
   include ActiveMerchant::Billing::Integrations
-  
+
   def setup
     @helper = Bogus::Helper.new('order-500','cfauser', :amount => 500, :currency => 'CAD')
   end
@@ -13,8 +13,8 @@ class BogusHelperTest < Test::Unit::TestCase
     assert_field 'amount', '500'
     assert_field 'currency', 'CAD'
   end
- 
-  def test_customer_fields 
+
+  def test_customer_fields
     @helper.customer :first_name => 'Cody', :last_name => 'Fauser'
     assert_field 'first_name', 'Cody'
     assert_field 'last_name', 'Fauser'

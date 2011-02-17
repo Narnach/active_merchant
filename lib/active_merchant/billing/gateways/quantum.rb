@@ -263,11 +263,11 @@ module ActiveMerchant #:nodoc:
         end
         return reply
       end
-      
+
       def authorization_for(reply)
         "#{reply[:TransactionID]};#{reply[:CreditCardNumber]}"
       end
-      
+
       def authorization_parts_from(authorization)
         authorization.split(/;/)
       end

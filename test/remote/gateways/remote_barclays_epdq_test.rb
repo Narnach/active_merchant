@@ -5,13 +5,13 @@ class RemoteBarclaysEpdqTest < Test::Unit::TestCase
 
   def setup
     @gateway = BarclaysEpdqGateway.new(fixtures(:barclays_epdq).merge(:test => true))
-    
+
     @approved_amount = 3900
     @declined_amount = 4205
     @approved_card = credit_card('4715320629000001')
     @declined_card = credit_card('4715320629000027')
 
-    @options = { 
+    @options = {
       :order_id => generate_unique_id,
       :billing_address => address,
       :description => 'Store Purchase'
@@ -23,13 +23,13 @@ class RemoteBarclaysEpdqTest < Test::Unit::TestCase
       :group_id => 'MyTestPaymentGroup'
     )
   end
-  
+
   def test_successful_purchase
     assert response = @gateway.purchase(@approved_amount, @approved_card, @options)
     assert_success response
     assert_equal 'Approved.', response.message
     assert_match AUTH_PATTERN, response.authorization
-    assert_no_match /PaymentNoFraud/, response.params["raw_response"] 
+    assert_no_match /PaymentNoFraud/, response.params["raw_response"]
   end
 
   def test_successful_purchase_with_mastercard
@@ -54,7 +54,7 @@ class RemoteBarclaysEpdqTest < Test::Unit::TestCase
     assert_success response
     assert_equal 'Approved.', response.message
     assert_match AUTH_PATTERN, response.authorization
-    assert_no_match /PaymentNoFraud/, response.params["raw_response"] 
+    assert_no_match /PaymentNoFraud/, response.params["raw_response"]
   end
 
   def test_successful_purchase_with_no_fraud
@@ -63,7 +63,7 @@ class RemoteBarclaysEpdqTest < Test::Unit::TestCase
     assert_success response
     assert_equal 'Approved.', response.message
     assert_match AUTH_PATTERN, response.authorization
-    assert_match /PaymentNoFraud/, response.params["raw_response"] 
+    assert_match /PaymentNoFraud/, response.params["raw_response"]
   end
 
   def test_successful_purchase_with_no_fraud_and_minimal_options
@@ -74,7 +74,7 @@ class RemoteBarclaysEpdqTest < Test::Unit::TestCase
     assert_success response
     assert_equal 'Approved.', response.message
     assert_match AUTH_PATTERN, response.authorization
-    assert_match /PaymentNoFraud/, response.params["raw_response"] 
+    assert_match /PaymentNoFraud/, response.params["raw_response"]
   end
 
   def test_successful_purchase_with_no_address_or_order_id_or_description
@@ -98,7 +98,7 @@ class RemoteBarclaysEpdqTest < Test::Unit::TestCase
   def test_credit_existing_order
     assert response = @gateway.purchase(@approved_amount, @approved_card, @options)
     assert_success response
-    
+
     assert credit = @gateway.credit(@approved_amount, response.authorization)
     assert_success credit
     assert_equal 'Approved.', credit.message
@@ -155,7 +155,7 @@ class RemoteBarclaysEpdqTest < Test::Unit::TestCase
   end
 
   def test_three_successful_periodic_orders
-    amount = @approved_amount 
+    amount = @approved_amount
     assert auth1 = @gateway.purchase(amount, @approved_card, @periodic_options)
     assert auth1.success?
     assert_equal 'Approved.', auth1.message

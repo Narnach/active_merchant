@@ -9,23 +9,23 @@ class NetaxeptTest < Test::Unit::TestCase
 
     @credit_card = credit_card
     @amount = 100
-    
-    @options = { 
+
+    @options = {
       :order_id => '1'
     }
   end
-  
+
   def test_successful_purchase
     s = sequence("request")
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[0]).in_sequence(s)
     @gateway.expects(:ssl_post).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[3]).in_sequence(s)
-    
+
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_instance_of NetaxeptGateway::Response, response
     assert_success response
-    
+
     assert_equal '16ea6a9d9253129ea5d70513093afe33', response.authorization
     assert response.test?
   end
@@ -36,10 +36,10 @@ class NetaxeptTest < Test::Unit::TestCase
     @gateway.expects(:ssl_post).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(failed_purchase_response).in_sequence(s)
-    
+
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_failure response
-    
+
     assert_equal '16ea6a9d9253129ea5d70513093afe33', response.authorization
     assert response.test?
   end
@@ -49,79 +49,79 @@ class NetaxeptTest < Test::Unit::TestCase
       response = @gateway.purchase(@amount, @credit_card, {})
     end
   end
-  
+
   def test_handles_currency_with_money
     s = sequence("request")
     @gateway.expects(:ssl_get ).with(regexp_matches(/currencyCode=USD/)).returns(successful_purchase_response[0]).in_sequence(s)
     @gateway.expects(:ssl_post).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[3]).in_sequence(s)
-    
+
     assert_success @gateway.purchase(100, @credit_card, @options.merge(:currency => 'USD'))
   end
-  
+
   def test_handles_currency_with_option
     s = sequence("request")
     @gateway.expects(:ssl_get ).with(regexp_matches(/currencyCode=USD/)).returns(successful_purchase_response[0]).in_sequence(s)
     @gateway.expects(:ssl_post).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[3]).in_sequence(s)
-    
+
     assert_success @gateway.purchase(@amount, @credit_card, @options.merge(:currency => 'USD'))
   end
-  
+
   def test_handles_visa_card_type
     s = sequence("request")
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[0]).in_sequence(s)
     @gateway.expects(:ssl_post).with(anything,
-      all_of(regexp_matches(/va=/), 
+      all_of(regexp_matches(/va=/),
              regexp_matches(/vm=/),
              regexp_matches(/vy=/),
              regexp_matches(/vc=/))).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[3]).in_sequence(s)
-    
+
     assert_success @gateway.purchase(@amount, @credit_card, @options)
   end
-  
+
   def test_handles_master_card_type
     s = sequence("request")
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[0]).in_sequence(s)
     @gateway.expects(:ssl_post).with(anything,
-      all_of(regexp_matches(/ma=/), 
+      all_of(regexp_matches(/ma=/),
              regexp_matches(/mm=/),
              regexp_matches(/my=/),
              regexp_matches(/mc=/))).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[3]).in_sequence(s)
-    
+
     assert_success @gateway.purchase(@amount, credit_card('1', :type => 'master'), @options)
   end
-  
+
   def test_handles_amex_card_type
     s = sequence("request")
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[0]).in_sequence(s)
     @gateway.expects(:ssl_post).with(anything,
-      all_of(regexp_matches(/aa=/), 
+      all_of(regexp_matches(/aa=/),
              regexp_matches(/am=/),
              regexp_matches(/ay=/),
              regexp_matches(/ac=/))).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[3]).in_sequence(s)
-    
+
     assert_success @gateway.purchase(@amount, credit_card('1', :type => 'american_express'), @options)
   end
-  
+
   def test_invalid_card_type
     assert_raise(ArgumentError) do
       @gateway.purchase(@amount, credit_card('1', :type => 'discover'), @options)
     end
   end
-  
+
   def test_handles_setup_transaction_error
     @gateway.expects(:ssl_get ).returns(error_purchase_response[0])
     @gateway.expects(:ssl_post).never
-    
+
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_failure response
     assert response.test?
@@ -132,7 +132,7 @@ class NetaxeptTest < Test::Unit::TestCase
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[0]).in_sequence(s)
     @gateway.expects(:ssl_post).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(error_purchase_response[2]).in_sequence(s)
-    
+
     assert response = @gateway.purchase(@amount, credit_card(''), @options)
     assert_failure response
     assert_equal 'Unable to process setup', response.message
@@ -145,7 +145,7 @@ class NetaxeptTest < Test::Unit::TestCase
     @gateway.expects(:ssl_post).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(error_purchase_response[3]).in_sequence(s)
-    
+
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_failure response
     assert_equal "Missing parameter: 'Transaction Amount'", response.message
@@ -158,31 +158,31 @@ class NetaxeptTest < Test::Unit::TestCase
     @credit_card.expects(:brand).at_least_once.returns(brand)
     @gateway.purchase(@amount, @credit_card, @options)
   end
-  
+
   def test_url_escape_password
     @gateway = NetaxeptGateway.new(:login => 'login', :password => '1a=W+Yr2')
-    
+
     s = sequence("request")
     @gateway.expects(:ssl_get).with(regexp_matches(/token=1a%3DW%2BYr2/)).returns(successful_purchase_response[0]).in_sequence(s)
     @gateway.expects(:ssl_post).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[3]).in_sequence(s)
-    
+
     @gateway.purchase(@amount, @credit_card, @options)
   end
-  
+
   def test_using_credit_card_transaction_service_type
     s = sequence("request")
     @gateway.expects(:ssl_get ).with(regexp_matches(/serviceType=M/)).returns(successful_purchase_response[0]).in_sequence(s)
     @gateway.expects(:ssl_post).returns(successful_purchase_response[1]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[2]).in_sequence(s)
     @gateway.expects(:ssl_get ).returns(successful_purchase_response[3]).in_sequence(s)
-    
+
     @gateway.purchase(@amount, @credit_card, @options)
   end
-  
+
   private
-  
+
   # Place raw successful response from gateway here
   def successful_purchase_response
     [
@@ -215,7 +215,7 @@ class NetaxeptTest < Test::Unit::TestCase
         </Result>),
     ]
   end
-  
+
   # Place raw failed response from gateway here
   def error_purchase_response
     [
@@ -243,7 +243,7 @@ class NetaxeptTest < Test::Unit::TestCase
       </ValidationException>)
     ]
   end
-  
+
   def failed_purchase_response
     %(<?xml version="1.0"?>
     <BBSException xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">

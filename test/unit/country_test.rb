@@ -18,7 +18,7 @@ class CountryTest < Test::Unit::TestCase
     assert_equal '124', country.code(:numeric).value
     assert_equal 'Canada', country.to_s
   end
-  
+
   def test_country_for_alpha3_code
     country = Country.find('CAN')
     assert_equal 'Canada', country.to_s
@@ -39,32 +39,32 @@ class CountryTest < Test::Unit::TestCase
       Country.find('Asskickistan')
     end
   end
-  
+
   def test_find_australia
     country = Country.find('AU')
     assert_equal 'AU', country.code(:alpha2).value
-    
+
     country = Country.find('Australia')
     assert_equal 'AU', country.code(:alpha2).value
   end
-  
+
   def test_find_united_kingdom
     country = Country.find('GB')
     assert_equal 'GB', country.code(:alpha2).value
-    
+
     country = Country.find('United Kingdom')
     assert_equal 'GB', country.code(:alpha2).value
   end
-  
+
   def test_raise_on_nil_name
     assert_raise(InvalidCountryCodeError) do
       Country.find(nil)
     end
   end
-  
+
   def test_country_names_are_alphabetized
     country_names = Country::COUNTRIES.map { | each | each[:name] }
     assert_equal(country_names.sort, country_names)
   end
-  
+
 end

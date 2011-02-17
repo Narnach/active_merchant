@@ -2,7 +2,7 @@ require 'test_helper'
 
 class SagePayFormModuleTest < Test::Unit::TestCase
   include ActiveMerchant::Billing::Integrations
-  
+
   def test_return_method
     assert_instance_of SagePayForm::Return, SagePayForm.return('name=cody')
   end
@@ -26,5 +26,5 @@ class SagePayFormModuleTest < Test::Unit::TestCase
     ActiveMerchant::Billing::Base.integration_mode = :zoomin
     assert_raise(StandardError){ SagePayForm.service_url }
   end
-  
-end 
+
+end

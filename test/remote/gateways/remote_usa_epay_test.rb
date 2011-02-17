@@ -9,7 +9,7 @@ class RemoveUsaEpayTest < Test::Unit::TestCase
     @options = { :billing_address => address }
     @amount = 100
   end
-  
+
   def test_successful_purchase
     assert response = @gateway.purchase(@amount, @creditcard, @options)
     assert_equal 'Success', response.message

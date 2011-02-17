@@ -16,7 +16,7 @@ class ActionViewHelperTest < Test::Unit::TestCase
       attr_reader :url_for_options
       def url_for(options, *parameters_for_method_reference)
         @url_for_options = options
-      end      
+      end
     end
     @controller = @controller.new
     @output_buffer = ''

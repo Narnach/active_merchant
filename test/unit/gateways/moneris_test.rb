@@ -3,7 +3,7 @@ require 'test_helper'
 class MonerisTest < Test::Unit::TestCase
   def setup
     Base.mode = :test
-    
+
     @gateway = MonerisGateway.new(
       :login => 'store1',
       :password => 'yesguy'
@@ -16,7 +16,7 @@ class MonerisTest < Test::Unit::TestCase
 
   def test_successful_purchase
     @gateway.expects(:ssl_post).returns(successful_purchase_response)
-  
+
     assert response = @gateway.authorize(100, @credit_card, @options)
     assert_success response
     assert_equal '58-0_3;1026.1', response.authorization
@@ -24,33 +24,33 @@ class MonerisTest < Test::Unit::TestCase
 
   def test_failed_purchase
     @gateway.expects(:ssl_post).returns(failed_purchase_response)
-  
+
     assert response = @gateway.authorize(100, @credit_card, @options)
     assert_failure response
   end
-  
+
   def test_amount_style
    assert_equal '10.34', @gateway.send(:amount, 1034)
-                                                      
+
    assert_raise(ArgumentError) do
      @gateway.send(:amount, '10.34')
    end
-  end                                                           
-  
+  end
+
   def test_purchase_is_valid_xml
 
-   params = { 
+   params = {
      :order_id => "order1",
      :amount => "1.01",
      :pan => "4242424242424242",
      :expdate => "0303",
-     :crypt_type => 7,                                                  
+     :crypt_type => 7,
    }
 
    assert data = @gateway.send(:post_data, 'preauth', params)
    assert REXML::Document.new(data)
    assert_equal xml_capture_fixture.size, data.size
-  end  
+  end
 
   def test_purchase_is_valid_xml
 
@@ -68,24 +68,24 @@ class MonerisTest < Test::Unit::TestCase
   end
 
   def test_capture_is_valid_xml
- 
-   params = { 
+
+   params = {
      :order_id => "order1",
      :amount => "1.01",
      :pan => "4242424242424242",
      :expdate => "0303",
-     :crypt_type => 7,                                                  
+     :crypt_type => 7,
    }
 
    assert data = @gateway.send(:post_data, 'preauth', params)
    assert REXML::Document.new(data)
    assert_equal xml_capture_fixture.size, data.size
-  end  
-  
+  end
+
   def test_supported_countries
     assert_equal ['CA'], MonerisGateway.supported_countries
   end
-  
+
   def test_supported_card_types
     assert_equal [:visa, :master, :american_express], MonerisGateway.supported_cardtypes
   end
@@ -95,8 +95,8 @@ class MonerisTest < Test::Unit::TestCase
       assert_raise(ArgumentError) { @gateway.void(invalid_transaction_param) }
     end
   end
-  
-  private  
+
+  private
   def successful_purchase_response
     <<-RESPONSE
 <?xml version="1.0"?>
@@ -118,10 +118,10 @@ class MonerisTest < Test::Unit::TestCase
     <TimedOut>false</TimedOut>
   </receipt>
 </response>
-    
+
     RESPONSE
   end
-  
+
   def failed_purchase_response
     <<-RESPONSE
 <?xml version="1.0"?>
@@ -143,9 +143,9 @@ class MonerisTest < Test::Unit::TestCase
     <TimedOut>false</TimedOut>
   </receipt>
 </response>
-    
+
     RESPONSE
-  end  
+  end
 
   def xml_purchase_fixture
    '<request><store_id>store1</store_id><api_token>yesguy</api_token><purchase><amount>1.01</amount><pan>4242424242424242</pan><expdate>0303</expdate><crypt_type>7</crypt_type><order_id>order1</order_id></purchase></request>'

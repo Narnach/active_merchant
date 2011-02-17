@@ -8,7 +8,7 @@ module ActiveMerchant #:nodoc:
           mapping :amount,   'Amount'
           mapping :currency, 'Currency'
           mapping :country,  'Country'
-          
+
           mapping :billing_address,  :city     => 'custCity',
                                      :address1 => 'custAddress',
                                      :state    => 'custState',
@@ -29,29 +29,28 @@ module ActiveMerchant #:nodoc:
 
           mapping :description, 'otherNotes'
           mapping :edit_allowed, 'editAllowed'
-          
+
           mapping :return_url, 'Success URL'
           mapping :failure_url, 'Failure URL'
-          
+
           mapping :operating_mode, 'Operating Mode'
           mapping :other_details, 'Other Details'
           mapping :collaborator, 'Collaborator'
-          
+
           OPERATING_MODE = 'DOM'
           COUNTRY        = 'IND'
           CURRENCY       = 'INR'
           OTHER_DETAILS  = 'NULL'
           EDIT_ALLOWED   = 'N'
-          
+
           PHONE_CODES = {
             'IN' => '91',
             'US' => '01',
             'CA' => '01'
           }
-          
+
           ENCODED_PARAMS = [ :account, :operating_mode, :country, :currency, :amount, :order, :other_details, :return_url, :failure_url, :collaborator ]
-          
-          
+
           def initialize(order, account, options = {})
             super
             collaborator = ActiveMerchant::Billing::Base.integration_mode == :test || options[:test] ? 'TOML' : 'DirecPay'
@@ -61,14 +60,13 @@ module ActiveMerchant #:nodoc:
             add_field(mappings[:other_details], OTHER_DETAILS)
             add_field(mappings[:edit_allowed], EDIT_ALLOWED)
           end
-          
 
           def customer(params = {})
             full_name = "#{params[:first_name]} #{params[:last_name]}"
             add_field(mappings[:customer][:name], full_name)
             add_field(mappings[:customer][:email], params[:email])
           end
-          
+
           # Need to format the amount to have 2 decimal places
           def amount=(money)
             cents = money.respond_to?(:cents) ? money.cents : money
@@ -77,37 +75,36 @@ module ActiveMerchant #:nodoc:
             end
             add_field(mappings[:amount], sprintf("%.2f", cents.to_f/100))
           end
-          
+
           def shipping_address(params = {})
             add_street_address!(params)
             super(params.dup)
             add_field(mappings[:shipping_address][:name], fields[mappings[:customer][:name]]) if fields[mappings[:shipping_address][:name]].blank?
             add_phone_for!(:shipping_address, params)
           end
-          
+
           def billing_address(params = {})
             add_street_address!(params)
             super(params.dup)
             add_phone_for!(:billing_address, params)
           end
-          
+
           def form_fields
             add_failure_url
             add_request_parameters
-            
+
             unencoded_parameters
           end
-          
 
           private
 
           def add_request_parameters
             params = ENCODED_PARAMS.map{ |param| fields[mappings[param]] }
             encoded = encode_value(params.join('|'))
-            
+
             add_field('requestparameter', encoded)
           end
-          
+
           def unencoded_parameters
             params = fields.dup
             # remove all encoded params from exported fields
@@ -116,28 +113,28 @@ module ActiveMerchant #:nodoc:
             params = params.collect{|name, value| [name, remove_special_characters(value)] }
             Hash[params]
           end
-          
+
           def add_failure_url
             if fields[mappings[:failure_url]].nil?
               add_field(mappings[:failure_url], fields[mappings[:return_url]])
             end
           end
-          
+
           def add_street_address!(params)
             address = params[:address1]
             address << " #{params[:address2]}" if params[:address2]
             params.merge!(:address1 => address)
           end
-                    
+
           def add_phone_for!(address_type, params)
             address_field = address_type == :billing_address ? 'custPhoneNo' : 'deliveryPhNo'
-            
+
             if params.has_key?(:phone)
               country = fields[mappings[address_type][:country]]
               phone = params[:phone].to_s
               # Remove all non digits
               phone.gsub!(/[^\d ]+/, '')
-              
+
               phone_country_code, phone_area_code, phone_number = nil
 
               if country == 'IN' && phone =~ /(91)? *(\d{3}) *(\d{4,})$/
@@ -160,24 +157,24 @@ module ActiveMerchant #:nodoc:
               add_field("#{address_field}3", phone_number)
             end
           end
-          
+
           # Special characters are NOT allowed while posting transaction parameters on DirecPay system
           def remove_special_characters(string)
             string.gsub(/[~"'&#%]/, '-')
           end
-          
+
           def encode_value(value)
             encoded = ActiveSupport::Base64.encode64s(value)
             string_to_encode = encoded[0, 1] + "T" + encoded[1, encoded.length]
             ActiveSupport::Base64.encode64s(string_to_encode)
           end
-          
+
           def decode_value(value)
             decoded = ActiveSupport::Base64.decode64(value)
             string_to_decode = decoded[0, 1] + decoded[2, decoded.length]
             ActiveSupport::Base64.decode64(string_to_decode)
           end
-          
+
           def phone_code_for_country(country)
             PHONE_CODES[country]
           end

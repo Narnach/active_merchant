@@ -12,7 +12,7 @@ class SecureNetTest < Test::Unit::TestCase
 
     n = Time.now
     order_id = n.to_i.to_s + n.usec.to_s
-    @options = { 
+    @options = {
       :order_id => order_id,
       :billing_address => address,
       :description => 'Store Purchase'
@@ -20,7 +20,7 @@ class SecureNetTest < Test::Unit::TestCase
   end
 
   def test_expired_credit_card
-    @credit_card.year = 2004 
+    @credit_card.year = 2004
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_failure response
     assert response.test?

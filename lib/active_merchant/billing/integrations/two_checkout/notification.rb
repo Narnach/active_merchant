@@ -24,7 +24,7 @@ module ActiveMerchant #:nodoc:
         #   	ship_state	Shipping information
         #   	ship_zip	 Shipping information
         #   	ship_country	Shipping information
-        #   	product_id	2Checkout product ID for purchased items will append a number if more than one item. 
+        #   	product_id	2Checkout product ID for purchased items will append a number if more than one item.
         #  ex. product_id,product_id1,product_id2
         #   	quantity	quantity of corresponding product will append a number if more than one item.
         #  ex. quantity,quantity1,quantity2
@@ -32,14 +32,14 @@ module ActiveMerchant #:nodoc:
         #  ex. merchant_product_id,merchant_product_id1,merchant_product_id2
         #   	product_description	your description for purchased items will append a number if more than one item.
         #  ex. product_description,product_description1,product_description2
-          
+
           def currency
             'USD'
           end
-          
+
           def complete?
             status == 'Completed'
-          end 
+          end
 
           def item_id
             params['cart_order_id']
@@ -56,10 +56,10 @@ module ActiveMerchant #:nodoc:
           def payer_email
             params['email']
           end
-         
+
           def receiver_email
             params['']
-          end 
+          end
 
           # The MD5 Hash
           def security_key
@@ -86,27 +86,27 @@ module ActiveMerchant #:nodoc:
               'Failed'
             end
           end
-          
+
           def verify(secret)
             return false if security_key.blank?
-            
+
             Digest::MD5.hexdigest("#{secret}#{params['sid']}#{transaction_id}#{gross}").upcase == security_key.upcase
           end
-          
+
           def acknowledge
             true
           end
-          
+
           private
-          
+
           def parse(post)
             @raw = post.to_s
-            for line in @raw.split('&')    
+            for line in @raw.split('&')
               key, value = *line.scan( %r{^(\w+)\=(.*)$} ).flatten
               params[key] = CGI.unescape(value || '')
             end
           end
-          
+
         end
       end
     end

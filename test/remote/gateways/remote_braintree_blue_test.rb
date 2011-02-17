@@ -58,7 +58,6 @@ class RemoteBraintreeBlueTest < Test::Unit::TestCase
     assert_equal customer_vault_id, response.params["braintree_transaction"].customer_details.id
   end
 
-
   def test_successful_purchase
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_success response

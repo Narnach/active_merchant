@@ -3,10 +3,10 @@ require 'test_helper'
 class RemotePayflowTest < Test::Unit::TestCase
   def setup
     Base.gateway_mode = :test
-    
+
     @gateway = PayflowExpressGateway.new(fixtures(:payflow))
 
-    @options = { :billing_address => { 
+    @options = { :billing_address => {
                                 :name => 'Cody Fauser',
                                 :address1 => '1234 Shady Brook Lane',
                                 :city => 'Ottawa',
@@ -18,7 +18,7 @@ class RemotePayflowTest < Test::Unit::TestCase
                  :email => 'cody@example.com'
                }
   end
-  
+
   # Only works with a Payflow 2.0 account or by requesting the addition
   # of Express checkout to an existing Payflow Pro account.  This can be done
   # by contacting Payflow sales. The PayPal account used must be a business
@@ -35,7 +35,7 @@ class RemotePayflowTest < Test::Unit::TestCase
     assert response.test?
     assert !response.params['token'].blank?
   end
-  
+
   def test_set_express_purchase
     @options.update(
       :return_url => 'http://example.com',

@@ -1,17 +1,16 @@
 require 'test_helper'
 
 class RemoteMerchantESolutionTest < Test::Unit::TestCase
-  
 
 	def setup
 	  Base.gateway_mode = :test
-	  
+	
 		@gateway = MerchantESolutionsGateway.new(fixtures(:merchant_esolutions))
 
 		@amount = 100
 		@credit_card = credit_card('4111111111111111')
 		@declined_card = credit_card('4111111111111112')
-    
+
 		@options = {
 		:billing_address => {
 			:name     => 'John Doe',
@@ -25,7 +24,7 @@ class RemoteMerchantESolutionTest < Test::Unit::TestCase
 		}
 	}
 	end
-  
+
 	def test_successful_purchase
 		assert response = @gateway.purchase(@amount, @credit_card, @options)
 		assert_success response

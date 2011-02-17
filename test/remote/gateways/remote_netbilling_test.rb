@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class RemoteNetbillingTest < Test::Unit::TestCase
- 
+
   def setup
     @gateway = NetbillingGateway.new(fixtures(:netbilling))
 
@@ -18,15 +18,15 @@ class RemoteNetbillingTest < Test::Unit::TestCase
                   :zip => '94043',
                   :phone => '650-253-0001'
                 }
-  
-    @options = {  
+
+    @options = {
       :billing_address => @address,
       :description => 'Internet purchase'
     }
-               
+
     @amount = 100
   end
-  
+
   def test_successful_purchase
     assert response = @gateway.purchase(@amount, @credit_card, @options)
     assert_success response

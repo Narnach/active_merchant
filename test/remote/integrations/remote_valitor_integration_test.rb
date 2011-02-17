@@ -10,7 +10,7 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
     @login = fixtures(:valitor)[:login]
     @password = fixtures(:valitor)[:password]
   end
-  
+
   def test_full_purchase
     notification_request = listen_for_notification(80) do |notify_url|
       payment_page = submit %(
@@ -24,26 +24,26 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
           <% service.language = 'en' %>
         <% end %>
       )
-    
+
       assert_match(%r(http://example.org/cancel)i, payment_page.body)
       assert_match(%r(PRODUCT1), payment_page.body)
-      
+
       form = payment_page.forms.first
       form['tbKortnumer'] = '4111111111111111'
       form['drpGildistimiManudur'] = '12'
       form['drpGildistimiAr'] = Time.now.year
       form['tbOryggisnumer'] = '000'
       result_page = form.submit(form.submits.first)
-      
+
       assert continue_link = result_page.links.detect{|e| e.text =~ /successtext!/i}
       assert_match(%r(^http://example.org/return\?)i, continue_link.href)
-      
+
       check_common_fields(return_from(continue_link.href))
     end
-    
+
     check_common_fields(notification_from(notification_request))
   end
-  
+
   def test_customer_fields
     payment_page = submit %(
       <% payment_service_for('#{@order}', '#{@login}', :service => :valitor, :html => {:method => 'GET'}) do |service| %>
@@ -56,7 +56,7 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
         <% service.collect_customer_info %>
       <% end %>
     )
-  
+
     form = payment_page.forms.first
     form['tbKortnumer'] = '4111111111111111'
     form['drpGildistimiManudur'] = '12'
@@ -70,10 +70,10 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
     form['tbKaupTolvupostfang'] = "EMAIL@EXAMPLE.COM"
     form['tbAthugasemdir'] = "COMMENTS"
     result_page = form.submit(form.submits.first)
-    
+
     assert continue_link = result_page.links.detect{|e| e.text =~ /successtext!/i}
     assert_match(%r(^http://example.org/return\?)i, continue_link.href)
-    
+
     ret = return_from(continue_link.href)
     check_common_fields(ret)
     assert_equal "NAME", ret.customer_name
@@ -99,7 +99,7 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
         <% service.collect_customer_info %>
       <% end %>
     )
-    
+
     assert_match(%r(http://example.org/cancel)i, payment_page.body)
 
     doc = Nokogiri::HTML(payment_page.body)
@@ -110,7 +110,7 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
     check_product_row(rows[3], "PRODUCT3", "6", "300 ISK", "0 ISK",  "1.800 ISK")
     assert_match /2.050 ISK/, rows[4].element_children.first.text
   end
-  
+
   def check_product_row(row, desc, quantity, amount, discount, total)
     assert_equal desc,     row.element_children[0].text.strip
     assert_equal quantity, row.element_children[1].text.strip
@@ -118,7 +118,7 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
     assert_equal discount, row.element_children[3].text.strip
     assert_equal total,    row.element_children[4].text.strip
   end
-  
+
   def check_common_fields(response)
     assert response.success?
     assert_equal 'VISA', response.card_type
@@ -129,11 +129,11 @@ class RemoteValitorIntegrationTest < Test::Unit::TestCase
     assert response.transaction_number.length > 0
     assert response.transaction_id.length > 0
   end
-  
+
   def return_from(uri)
     ActiveMerchant::Billing::Integrations::Valitor.return(uri.split('?').last, :password => @password)
   end
-  
+
   def notification_from(request)
     ActiveMerchant::Billing::Integrations::Valitor.notification(request.params["QUERY_STRING"], :password => @password)
   end

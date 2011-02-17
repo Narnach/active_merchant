@@ -21,5 +21,5 @@ class AdyenNotificationTest < Test::Unit::TestCase
   private
   def http_raw_data
     "eventDate=2009-10-14T22%3A39%3A05.40Z&reason=22295%3A1111%3A12%2F2012&originalReference=&merchantReference=10&currency=USD&pspReference=8512555599453931&merchantAccountCode=RazWar&eventCode=AUTHORISATION&value=1000&operations=CANCEL%2CCAPTURE%2CREFUND&success=true&paymentMethod=visa&live=false"
-  end  
+  end
 end
