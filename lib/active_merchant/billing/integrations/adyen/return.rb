@@ -9,6 +9,11 @@ module ActiveMerchant #:nodoc:
       module Adyen
         class Return < ActiveMerchant::Billing::Integrations::Return
 
+          def initialize(query_string, options = {})
+            @shared_secret = options.delete(:shared_secret)
+            super(query_string, options)
+          end
+
           # for verifying the signature of the URL parameters returned by Adyen after the payment process
           PAYMENT_RESULT_SIGNATURE_FIELDS = [
             :authResult,
@@ -29,7 +34,7 @@ module ActiveMerchant #:nodoc:
             end
             return Base64.encode64(digest).strip
           end
-          
+
           def signature_is_valid?
             generate_signature.to_s == params['merchantSig'].to_s
           end
@@ -37,7 +42,7 @@ module ActiveMerchant #:nodoc:
           def payment_authorized?
             params['authResult'] == 'AUTHORISED'
           end
-  
+
           def success?
             signature_is_valid? and payment_authorized?
           end
