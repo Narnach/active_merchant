@@ -76,6 +76,7 @@ The {ActiveMerchant Wiki}[http://github.com/Shopify/active_merchant/wikis] conta
 == Supported Offsite Payment Gateways
 
 * {2 Checkout}[http://www.2checkout.com]
+* {Adyen}[http://www.adyen.com/] - NL
 * {Banca Sella GestPay}[https://www.sella.it/banca/ecommerce/gestpay/gestpay.jsp]
 * {Chronopay}[http://www.chronopay.com]
 * {DirecPay}[http://www.timesofmoney.com/direcpay/jsp/home.jsp]
