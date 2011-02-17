@@ -8,12 +8,15 @@ module ActiveMerchant #:nodoc:
       module Adyen
 
         mattr_accessor :service_url
+        mattr_accessor :payment_type
 
-        TEST_URL = 'https://test.adyen.com/hpp/select.shtml'
-        LIVE_URL = 'https://live.adyen.com/hpp/select.shtml'
+        def self.payment_type
+          @@payment_type ||= :select
+        end
 
         def self.service_url
-          ActiveMerchant::Billing::Base.integration_mode == :test ? TEST_URL : LIVE_URL
+          subdomain = ActiveMerchant::Billing::Base.integration_mode == :test ? "test" : "live"
+          "https://#{subdomain}.adyen.com/hpp/#{payment_type}.shtml"
         end
 
         def self.notification(post)
