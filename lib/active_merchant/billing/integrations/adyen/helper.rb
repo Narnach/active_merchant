@@ -25,8 +25,10 @@ module ActiveMerchant #:nodoc:
           ADDRESS_SIGNATURE_FIELDS = %w( billingAddress.street billingAddress.houseNumberOrName billingAddress.city billingAddress.postalCode billingAddress.stateOrProvince billingAddress.country )
 
           def initialize(order, account, options = {})
-            super
-            add_field('currencyCode',    'USD')
+            defaults = {
+              :currency=>"USD"
+            }
+            super(order, account, defaults.merge(options))
             add_field('shipBeforeDate',  Date.today + 10)
             add_field('skinCode',        'notavalidskincode')
             add_field('shopperLocale',   'en_GB')
@@ -72,7 +74,7 @@ module ActiveMerchant #:nodoc:
           mapping :amount, 'paymentAmount'
           mapping :order, 'merchantReference'
 
-          mapping :currencyCode, 'currencyCode'
+          mapping :currency, 'currencyCode'
           mapping :shipBeforeDate, 'shipBeforeDate'
           mapping :skinCode, 'skinCode'
           mapping :shopperLocale, 'shopperLocale'

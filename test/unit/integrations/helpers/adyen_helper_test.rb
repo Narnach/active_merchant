@@ -10,6 +10,7 @@ class AdyenHelperTest < Test::Unit::TestCase
   def test_basic_helper_fields
     assert_field 'merchantAccount',   'cody@example.com'
     assert_field 'paymentAmount',     '500'
+    assert_field 'currencyCode',      'USD'
     assert_field 'merchantReference', 'order-500'
   end
 
@@ -32,4 +33,8 @@ class AdyenHelperTest < Test::Unit::TestCase
     assert_field 'billingAddress.postalCode',      'LS2 7EE'
   end
 
+  def test_custom_currency
+    @helper = Adyen::Helper.new('order-500','cody@example.com', :amount => 500, :currency => 'EUR')
+    assert_field 'currencyCode',      'EUR'
+  end
 end
