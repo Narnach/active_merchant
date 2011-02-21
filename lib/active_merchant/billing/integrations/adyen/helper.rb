@@ -34,15 +34,7 @@ module ActiveMerchant #:nodoc:
           ADDRESS_SIGNATURE_FIELDS = %w( billing_address.street billing_address.house_number_or_name billing_address.city billing_address.postal_code billing_address.state_or_province billing_address.country )
 
           def initialize(order, account, options = {})
-            defaults = {
-              :currency=>"USD"
-            }
-            super(order, account, defaults.merge(options))
-            add_field('ship_before_date',  Date.today + 10)
-            add_field('skin_code',        'notavalidskincode')
-            add_field('shopper_locale',   'en_GB')
-            add_field('order_data',       'orderData')
-            add_field('session_validity', "#{ (Date.today + 10).to_s }T11:00:00Z" )
+            super
           end
 
           # orderData is a string of HTML which is displayed along with the CC form
@@ -67,7 +59,17 @@ module ActiveMerchant #:nodoc:
           end
 
           def generate_signature_string
-            SIGNATURE_FIELDS.map {|key| @fields[key.to_s]} * ""
+            SIGNATURE_FIELDS.map { |key|
+              value = @fields[key.to_s]
+              case key.to_s
+              when 'session_validity'
+                value.to_time.utc.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+              when 'ship_before_date'
+                value.to_date.strftime("%Y-%m-%d")
+              else
+                value
+              end
+            }.join("")
           end
 
           def generate_signature
