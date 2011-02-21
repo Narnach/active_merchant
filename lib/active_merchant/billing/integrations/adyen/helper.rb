@@ -34,7 +34,14 @@ module ActiveMerchant #:nodoc:
           ADDRESS_SIGNATURE_FIELDS = %w( billing_address.street billing_address.house_number_or_name billing_address.city billing_address.postal_code billing_address.state_or_province billing_address.country )
 
           def initialize(order, account, options = {})
-            super
+            # Do NOT call super. Super's options are too limited for Adyen
+            options.assert_valid_keys([:amount, :currency, :test] + SIGNATURE_FIELDS)
+            @fields = {}
+            self.order       = order
+            self.account     = account
+            options.each do |k, v|
+              self.send("#{k}=", v)
+            end
           end
 
           # orderData is a string of HTML which is displayed along with the CC form
