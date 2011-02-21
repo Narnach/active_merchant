@@ -11,29 +11,38 @@ module ActiveMerchant #:nodoc:
 
           # the values of these fields are concatenated, HMAC digested, Base64 encoded, and sent along with the POST data to make hoodwinkery difficult
           SIGNATURE_FIELDS = [
-            :paymentAmount,
-            :currencyCode,
-            :shipBeforeDate,
-            :merchantReference,
-            :skinCode,
-            :merchantAccount,
-            :sessionValidity,
+            :amount,               # Amount to pay in cents.
+            :currency,             # ISO code of currency to pay in.
+            :ship_before_date,     # Date before which order has to be shpped, in YYYY-MM-DD format.
+            :merchant_reference,   # Merchant reference for payment. Max 80 characters.
+            :skin_code,            # Skin code to use for the payment page (affects branding, available payment options).
+            :account,              # Merchant account with Adyen.
+            :session_validity,     # Time before which the payment has to be completed, in YYYY-MM-DDThh:mm:ssTZD. TZD is TimeZone Designator. Use Z or +hh:mm or -hh:mm.
+            :shopper_email,        # (Optional) Email address of the shopper.
+            :shopper_reference,    # (Optional) Unique identifier for shopper.
+            :recurring_contract,   # (Optional/CVC-only) What type of recurring payment to use. ONECLICK is the only documented value.
+            :allowed_methods,      # (Optional) One or more allowed payment methods. Comma-join them. Examples: visa,mc,ideal,paypal. Groups of methods can be used, too: card,bankTransfer. See account for all possible methods.
+            :blocked_methods,      # (Optional) One or more blocked payment methods. Same deal as with allowedMethods.
+            :shopper_statement,    # (Optional) Max 135 characters, limited to a-zA-Z0-9.,-?|
+            :merchant_return_data, # (Optional) Max 128 characters. This is returned after the payment. Useful for sending session IDs and such around. Avoid if possible due to URL length limitations.
+            :billing_address_type, # (Optional) Affects visiblity/change-ability of billing address details. nil=modifiable+visible, 1=unmodifiable+visible, 2=unmodifiable+invisible.
+            :offset                # (Optional) Affects fraud scoring and likelyhood of payment being rejected. 100 blocks all payments, -150 allows almost all payments.
           ]
 
           # same as above but for the customer's street address, which is to be separately hashed, as specified by Adyen
           # country should be ISO 3166-1 alpha-2 format, see http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 )
-          ADDRESS_SIGNATURE_FIELDS = %w( billingAddress.street billingAddress.houseNumberOrName billingAddress.city billingAddress.postalCode billingAddress.stateOrProvince billingAddress.country )
+          ADDRESS_SIGNATURE_FIELDS = %w( billing_address.street billing_address.house_number_or_name billing_address.city billing_address.postal_code billing_address.state_or_province billing_address.country )
 
           def initialize(order, account, options = {})
             defaults = {
               :currency=>"USD"
             }
             super(order, account, defaults.merge(options))
-            add_field('shipBeforeDate',  Date.today + 10)
-            add_field('skinCode',        'notavalidskincode')
-            add_field('shopperLocale',   'en_GB')
-            add_field('orderData',       'orderData')
-            add_field('sessionValidity', "#{ (Date.today + 10).to_s }T11:00:00Z" )
+            add_field('ship_before_date',  Date.today + 10)
+            add_field('skin_code',        'notavalidskincode')
+            add_field('shopper_locale',   'en_GB')
+            add_field('order_data',       'orderData')
+            add_field('session_validity', "#{ (Date.today + 10).to_s }T11:00:00Z" )
           end
 
           # orderData is a string of HTML which is displayed along with the CC form
@@ -69,33 +78,41 @@ module ActiveMerchant #:nodoc:
           def generate_address_signature_string
           end
 
-          # Replace with the real mapping
           mapping :account, 'merchantAccount'
+          mapping :allowed_methods, 'allowedMethods'
           mapping :amount, 'paymentAmount'
-          mapping :order, 'merchantReference'
-
+          mapping :blocked_methods, 'blockedMethods'
           mapping :currency, 'currencyCode'
-          mapping :shipBeforeDate, 'shipBeforeDate'
-          mapping :skinCode, 'skinCode'
-          mapping :shopperLocale, 'shopperLocale'
-          mapping :orderData, 'orderData'
-          mapping :sessionValidity, 'sessionValidity'
-
-          mapping :customer, :email      => 'shopperEmail'
+          mapping :customer, :email => 'shopperEmail'
+          mapping :merchant_reference, 'merchantReference'
+          mapping :merchant_return_data, 'merchantReturnData'
+          mapping :offset, 'offset'
+          mapping :order, 'merchantReference'
+          mapping :order_data, 'orderData'
+          mapping :recurring_contract, 'recurringContract'
+          mapping :session_validity, 'sessionValidity'
+          mapping :ship_before_date, 'shipBeforeDate'
+          mapping :shopper_email, 'shopperEmail'
+          mapping :shopper_locale, 'shopperLocale'
+          mapping :shopper_reference, 'shopperReference'
+          mapping :shopper_statement, 'shopperStatement'
+          mapping :skin_code, 'skinCode'
 
           mapping :billing_address, :city     => 'billingAddress.city',
                                     :address1 => 'billingAddress.street',
                                     #:address2 => 'billingAddress.????',
                                     :state    => 'billingAddress.stateOrProvince',
                                     :zip      => 'billingAddress.postalCode',
-                                    :country  => 'billingAddress.country'
+                                    :country  => 'billingAddress.country', # This two-letter format: http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#NL
+                                    :type     => 'billingAddressType' # Yes, there is no '.' in there!
 
-          mapping :notify_url, ''
-          mapping :return_url, ''
           mapping :cancel_return_url, ''
           mapping :description, ''
-          mapping :tax, ''
+          mapping :notify_url, ''
+          mapping :return_url, ''
           mapping :shipping, ''
+          mapping :tax, ''
+
 
         end
       end
