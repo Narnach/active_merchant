@@ -34,6 +34,7 @@ module ActiveMerchant #:nodoc:
           ADDRESS_SIGNATURE_FIELDS = %w( billing_address.street billing_address.house_number_or_name billing_address.city billing_address.postal_code billing_address.state_or_province billing_address.country )
 
           def initialize(order, account, options = {})
+            self.shared_secret options.delete(:shared_secret)
             # Do NOT call super. Super's options are too limited for Adyen
             options.assert_valid_keys([:amount, :currency, :test] + SIGNATURE_FIELDS)
             @fields = {}
@@ -65,18 +66,16 @@ module ActiveMerchant #:nodoc:
             @fields
           end
 
+          def session_validity=(time)
+            method_missing('session_validity=', time.utc.strftime("%Y-%m-%dT%H:%M:%S+00:00"))
+          end
+
+          def ship_before_date=(date)
+            method_missing('ship_before_date=', date.strftime("%Y-%m-%d"))
+          end
+
           def generate_signature_string
-            SIGNATURE_FIELDS.map { |key|
-              value = @fields[key.to_s]
-              case key.to_s
-              when 'session_validity'
-                value.to_time.utc.strftime("%Y-%m-%dT%H:%M:%S+00:00")
-              when 'ship_before_date'
-                value.to_date.strftime("%Y-%m-%d")
-              else
-                value
-              end
-            }.join("")
+            SIGNATURE_FIELDS.map { |key| @fields[self.mappings[key].to_s] }.join("")
           end
 
           def generate_signature
