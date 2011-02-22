@@ -19,7 +19,8 @@ module ActiveMerchant #:nodoc:
             :authResult,
             :pspReference,
             :merchantReference,
-            :skinCode
+            :skinCode,
+            :merchantReturnData
           ]
 
           def generate_signature_string
