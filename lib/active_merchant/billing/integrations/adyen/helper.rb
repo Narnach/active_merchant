@@ -117,7 +117,7 @@ module ActiveMerchant #:nodoc:
           mapping :cancel_return_url, ''
           mapping :description, ''
           mapping :notify_url, ''
-          mapping :return_url, ''
+          mapping :return_url, 'resURL'
           mapping :shipping, ''
           mapping :tax, ''
 
