@@ -37,4 +37,13 @@ class AdyenHelperTest < Test::Unit::TestCase
     @helper = Adyen::Helper.new('order-500','cody@example.com', :amount => 500, :currency => 'EUR')
     assert_field 'currencyCode',      'EUR'
   end
+
+  def test_custom_currency
+    session_validity = DateTime.parse("2011-03-01 22:16:30 +02:00")
+    ship_before_date = Date.today+1
+    @helper = Adyen::Helper.new('order-500','cody@example.com', :amount => 500, :currency => 'EUR', :allowed_methods=>"ideal", :session_validity=>session_validity, :ship_before_date=>ship_before_date)
+    assert_field 'allowedMethods', "ideal"
+    assert_field 'sessionValidity', session_validity.to_s
+    assert_field 'shipBeforeDate', ship_before_date.to_s
+  end
 end
