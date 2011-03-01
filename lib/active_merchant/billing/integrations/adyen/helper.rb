@@ -67,7 +67,7 @@ module ActiveMerchant #:nodoc:
           end
 
           def session_validity=(time)
-            method_missing('session_validity=', time.utc.strftime("%Y-%m-%dT%H:%M:%S+00:00"))
+            method_missing('session_validity=', time.strftime("%Y-%m-%dT%H:%M:%S%z").sub(/(#{time.strftime('%z')})$/) {|match| })
           end
 
           def ship_before_date=(date)
