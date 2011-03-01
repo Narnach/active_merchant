@@ -9,16 +9,22 @@ class AdyenNotificationTest < Test::Unit::TestCase
 
   def test_accessors
     assert @adyen.complete?
+    assert @adyen.test?
     assert_equal "true", @adyen.status
     assert_equal "8512555599453931", @adyen.transaction_id
     assert_equal "10", @adyen.item_id
     assert_equal "1000", @adyen.gross
     assert_equal "USD", @adyen.currency
     assert_equal "2009-10-14T22%3A39%3A05.40Z", @adyen.received_at
+    assert_equal "RazWar", @adyen.merchant_account_code
+    assert_equal "visa", @adyen.payment_method
+    assert_equal "AUTHORISATION", @adyen.event_code
+    assert_equal ["CANCEL","CAPTURE","REFUND"], @adyen.operations
     assert @adyen.test?
   end
 
   private
+
   def http_raw_data
     "eventDate=2009-10-14T22%3A39%3A05.40Z&reason=22295%3A1111%3A12%2F2012&originalReference=&merchantReference=10&currency=USD&pspReference=8512555599453931&merchantAccountCode=RazWar&eventCode=AUTHORISATION&value=1000&operations=CANCEL%2CCAPTURE%2CREFUND&success=true&paymentMethod=visa&live=false"
   end

@@ -13,6 +13,18 @@ module ActiveMerchant #:nodoc:
             params['eventCode']
           end
 
+          def merchant_account_code
+            params['merchantAccountCode']
+          end
+
+          def payment_method
+            params['paymentMethod']
+          end
+
+          def operations
+            URI.unescape(params['operations'].to_s).split(",")
+          end
+
           def item_id
             params['merchantReference']
           end
