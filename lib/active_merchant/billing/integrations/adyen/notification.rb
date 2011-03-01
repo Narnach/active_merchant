@@ -21,6 +21,10 @@ module ActiveMerchant #:nodoc:
             params['paymentMethod']
           end
 
+          def reason
+            params['reason']
+          end
+
           def operations
             URI.unescape(params['operations'].to_s).split(",")
           end

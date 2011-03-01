@@ -20,6 +20,7 @@ class AdyenNotificationTest < Test::Unit::TestCase
     assert_equal "visa", @adyen.payment_method
     assert_equal "AUTHORISATION", @adyen.event_code
     assert_equal ["CANCEL","CAPTURE","REFUND"], @adyen.operations
+    assert_equal '22295%3A1111%3A12%2F2012', @adyen.reason
     assert @adyen.test?
   end
 
