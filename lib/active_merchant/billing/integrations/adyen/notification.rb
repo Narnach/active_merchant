@@ -25,6 +25,10 @@ module ActiveMerchant #:nodoc:
             params['reason']
           end
 
+          def original_reference
+            params['originalReference']
+          end
+
           def operations
             URI.unescape(params['operations'].to_s).split(",")
           end

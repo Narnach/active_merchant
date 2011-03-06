@@ -21,6 +21,7 @@ class AdyenNotificationTest < Test::Unit::TestCase
     assert_equal "AUTHORISATION", @adyen.event_code
     assert_equal ["CANCEL","CAPTURE","REFUND"], @adyen.operations
     assert_equal '22295%3A1111%3A12%2F2012', @adyen.reason
+    assert_equal '', @adyen.original_reference
     assert @adyen.test?
   end
 
