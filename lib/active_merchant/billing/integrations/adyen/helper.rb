@@ -38,6 +38,7 @@ module ActiveMerchant #:nodoc:
             # Do NOT call super. Super's options are too limited for Adyen
             options.assert_valid_keys([:amount, :currency, :test] + SIGNATURE_FIELDS)
             @fields = {}
+            @raw_html_fields = []
             self.order       = order
             self.account     = account
             options.each do |k, v|
